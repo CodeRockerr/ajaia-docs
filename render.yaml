@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ajaia-docs
+    runtime: node
+    plan: free
+    buildCommand: "npm install --omit=dev || true"
+    startCommand: "node server.js"
+    healthCheckPath: /api/users
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATA_FILE
+        value: "/opt/render/project/src/data/store.json"

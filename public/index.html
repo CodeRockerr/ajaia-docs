@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajaia Docs</title>
+    <meta name="description" content="A lightweight collaborative document workspace." />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">A</div>
+          <div>
+            <strong>Ajaia</strong>
+            <span>Docs workspace</span>
+          </div>
+        </div>
+        <div class="top-actions">
+          <span id="save-status" class="save-status">Saved</span>
+          <label class="user-switcher">
+            <span>Viewing as</span>
+            <select id="user-select" aria-label="Switch seeded user"></select>
+          </label>
+          <button id="new-document" class="button button-primary" type="button">+ New document</button>
+          <div id="avatar" class="avatar" aria-hidden="true">AL</div>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="sidebar-heading">
+            <span>Workspace</span>
+            <button id="import-button" class="icon-button" type="button" title="Import .txt or .md">↥</button>
+            <input id="file-input" type="file" accept=".txt,.md,text/plain,text/markdown" hidden />
+          </div>
+
+          <div class="section-label">Owned by you</div>
+          <nav id="owned-list" class="document-list" aria-label="Owned documents"></nav>
+
+          <div class="section-label">Shared with you</div>
+          <nav id="shared-list-nav" class="document-list" aria-label="Shared documents"></nav>
+
+          <div class="sidebar-footer">
+            <div class="tip-icon" aria-hidden="true">↑</div>
+            <div>
+              <strong>Import supported</strong>
+              <p>.txt and .md become editable documents.</p>
+            </div>
+          </div>
+        </aside>
+
+        <main class="main-content">
+          <div id="empty-state" class="empty-state hidden">
+            <div class="empty-icon">A</div>
+            <h2>Start in Ajaia</h2>
+            <p>Create a document, import a draft, or open something shared with you.</p>
+          </div>
+
+          <section id="editor-view" class="editor-view">
+            <div class="document-header">
+              <div class="breadcrumbs">Workspace <span>/</span> <span id="breadcrumb-title">Welcome to Ajaia</span></div>
+              <div class="header-actions">
+                <button id="share-button" class="button button-secondary" type="button">Share</button>
+              </div>
+            </div>
+
+            <input id="title-input" class="title-input" value="Welcome to Ajaia" aria-label="Document title" maxlength="120" />
+
+            <div class="editor-meta">
+              <span id="owner-badge" class="badge">Owned by you</span>
+              <span id="updated-label">Updated just now</span>
+            </div>
+
+            <div class="toolbar" role="toolbar" aria-label="Formatting">
+              <button type="button" data-command="bold" title="Bold"><strong>B</strong></button>
+              <button type="button" data-command="italic" title="Italic"><em>I</em></button>
+              <button type="button" data-command="underline" title="Underline"><u>U</u></button>
+              <span class="toolbar-divider" aria-hidden="true"></span>
+              <select id="block-format" title="Text style" aria-label="Text style">
+                <option value="p">Paragraph</option>
+                <option value="h1">Heading 1</option>
+                <option value="h2">Heading 2</option>
+                <option value="h3">Heading 3</option>
+              </select>
+              <span class="toolbar-divider" aria-hidden="true"></span>
+              <button type="button" data-command="insertUnorderedList" title="Bulleted list">• List</button>
+              <button type="button" data-command="insertOrderedList" title="Numbered list">1. List</button>
+              <button type="button" data-command="formatBlock" data-value="blockquote" title="Quote">Quote</button>
+            </div>
+
+            <article id="editor" class="editor" contenteditable="true" spellcheck="true" aria-label="Document body"></article>
+
+            <div class="editor-footer">
+              <span>Changes save automatically</span>
+              <span>Supported import: .txt, .md</span>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div id="share-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="share-title">
+      <div class="modal">
+        <button id="close-modal" class="modal-close" type="button" aria-label="Close">×</button>
+        <div class="modal-eyebrow">COLLABORATE</div>
+        <h2 id="share-title">Share this document</h2>
+        <p class="modal-description">Grant another seeded teammate edit access. Owners keep control of sharing.</p>
+        <label for="share-user">Teammate</label>
+        <select id="share-user"></select>
+        <button id="confirm-share" class="button button-primary full-width" type="button">Share document</button>
+        <div id="shared-list" class="shared-list"></div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>
