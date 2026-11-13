@@ -47,7 +47,9 @@ Suggested path:
 
 ## Live demo
 
-See `SUBMISSION.md` for the deployed URL once published.
+**https://ajaia-docs-ashah.fly.dev/**
+
+Deployed on Fly.io with a persistent volume for `DATA_FILE`.
 
 ## Scope and tradeoffs
 

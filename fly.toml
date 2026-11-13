@@ -1,4 +1,4 @@
-app = "ajaia-docs"
+app = "ajaia-docs-ashah"
 primary_region = "iad"
 
 [build]

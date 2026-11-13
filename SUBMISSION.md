@@ -13,19 +13,21 @@
 | `public/` | Document workspace UI |
 | `test/server.test.js` | Persistence, sharing, import tests |
 | `VIDEO_URL.txt` | Walkthrough video link |
-| `Procfile` / `railway.toml` | Deployment hints |
+| `Dockerfile` / `fly.toml` | Fly.io deploy |
+| `Procfile` / `railway.toml` / `render.yaml` | Alternate deploy hints |
 
 ## Links
 
-- **Live product:** _(add Railway URL after deploy)_
+- **Source (GitHub):** https://github.com/CodeRockerr/ajaia-docs
+- **Live product:** https://ajaia-docs-ashah.fly.dev/
+- **Local:** http://localhost:3000
 - **Walkthrough video:** see `VIDEO_URL.txt`
-- **Source:** this folder
 
 ## Reviewer credentials
 
 No passwords. Use the **Viewing as** switcher:
 
-- `ada@ajaia.local` — owner
+- `ada@ajaia.local` — owner (welcome doc)
 - `grace@ajaia.local` — already shared on welcome doc
 - `linus@ajaia.local` — for deny / new-share checks
 
@@ -48,3 +50,11 @@ No passwords. Use the **Viewing as** switcher:
 ## Next 2–4 hours
 
 Passwordless auth, Postgres/SQLite + migrations, HTML sanitizer allowlist, optimistic concurrency / light version history.
+
+## Deploy notes
+
+Live on Fly.io (`ajaia-docs-ashah`) with a 1GB volume mounted at `/data`. Redeploy with:
+
+```bash
+fly deploy --ha=false
+```
