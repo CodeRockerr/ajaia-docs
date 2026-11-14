@@ -1,60 +1,102 @@
-# Ajaia Docs submission
+# Ajaia Docs — Submission
 
-**Candidate:** Adit Jigneshbhai Shah (`ashah45@ncsu.edu`)
+**Candidate:** Adit Jigneshbhai Shah  
+**Email:** ashah45@ncsu.edu  
+**Role:** Full Stack Product Engineer (AI-Native)
 
-## Included in this folder
+---
 
-| File | Purpose |
+## Live product
+
+**https://ajaia-docs-ashah.fly.dev/**
+
+No signup. Use the **Viewing as** switcher:
+
+| Identity | Email | Notes |
+| --- | --- | --- |
+| Ada Lovelace | ada@ajaia.local | Default owner; owns welcome doc |
+| Grace Hopper | grace@ajaia.local | Already shared on welcome doc |
+| Linus Torvalds | linus@ajaia.local | Use for share / deny checks |
+
+---
+
+## Exactly what is included in this Google Drive folder
+
+| Item | File / location |
 | --- | --- |
-| `README.md` | Local setup, seeded users, scope |
-| `ARCHITECTURE.md` | Prioritization and system shape |
-| `AI_WORKFLOW.md` | How Cursor was used / verified |
-| `server.js` | API, access rules, import, persistence, static hosting |
-| `public/` | Document workspace UI |
-| `test/server.test.js` | Persistence, sharing, import tests |
-| `VIDEO_URL.txt` | Walkthrough video link |
-| `Dockerfile` / `fly.toml` | Fly.io deploy |
-| `Procfile` / `railway.toml` / `render.yaml` | Alternate deploy hints |
+| Source code | Full project (also https://github.com/CodeRockerr/ajaia-docs) |
+| Local setup instructions | `README.md` |
+| Architecture / prioritization note | `ARCHITECTURE.md` |
+| AI workflow note | `AI_WORKFLOW.md` |
+| This submission index | `SUBMISSION.md` |
+| Live product URL | Above + repeated in `README.md` |
+| Walkthrough video URL | `VIDEO_URL.txt` |
+| Walkthrough speaking script (helper) | `WALKTHROUGH_SCRIPT.md` |
+| Sample import file | `samples/standup-notes.md` |
+| Screenshots | `screenshots/` |
+| Automated tests | `test/server.test.js` (`npm test`) |
+| Deploy configs | `Dockerfile`, `fly.toml`, `Procfile`, `render.yaml`, `railway.toml` |
 
-## Links
+---
 
-- **Source (GitHub):** https://github.com/CodeRockerr/ajaia-docs
-- **Live product:** https://ajaia-docs-ashah.fly.dev/
-- **Local:** http://localhost:3000
-- **Walkthrough video:** see `VIDEO_URL.txt`
+## What works end to end
 
-## Reviewer credentials
+1. **Document creation & editing** — create, rename, rich-text (bold / italic / underline / headings / lists / quotes), autosave, reopen after refresh  
+2. **File upload** — import `.txt` or `.md` into a new editable document (other types rejected with `415`; stated in UI + README)  
+3. **Sharing** — owner grants access to seeded users; sidebar separates **Owned by you** vs **Shared with you**; API enforces access  
+4. **Persistence** — JSON store locally; Fly.io volume in production  
+5. **Stretch: Markdown export** — **Export .md** downloads the current document (headings, lists, bold/italic); same access rules as viewing  
+6. **Engineering quality** — `npm start` / `npm test`, validation/errors, architecture + AI notes, deployed build
 
-No passwords. Use the **Viewing as** switcher:
+---
 
-- `ada@ajaia.local` — owner (welcome doc)
-- `grace@ajaia.local` — already shared on welcome doc
-- `linus@ajaia.local` — for deny / new-share checks
+## Intentionally deprioritized
 
-## What works
+- Real authentication / sessions (seeded switcher instead)  
+- Realtime multiplayer editing  
+- Comments / suggestion mode  
+- Full document version history  
+- DOCX / PDF import or PDF export  
+- Role-based permissions beyond basic access  
+- TipTap/Lexical / hosted DB (kept zero paid deps for reviewers)
 
-- Create, rename, rich-text edit, autosave, reopen after refresh
-- Import `.txt` / `.md` into a new editable document
-- Owner-managed sharing; owned vs shared sidebar sections
-- Persistence via JSON store (`DATA_FILE` for durable deploys)
-- Automated tests: `npm test`
+### What I would build next (2–4 hours)
 
-## Intentionally incomplete
+Passwordless auth, Postgres/SQLite + migrations, HTML sanitizer allowlist, light version history / optimistic concurrency.
 
-- Real authentication / sessions
-- Concurrent realtime editing
-- Comments, suggestions, version history
-- DOCX/PDF import or export
-- Role-based permissions beyond basic access
+---
 
-## Next 2–4 hours
+## Key implementation decisions
 
-Passwordless auth, Postgres/SQLite + migrations, HTML sanitizer allowlist, optimistic concurrency / light version history.
+- **Vanilla Node HTTP + static UI** — one process, no build step, fast to review  
+- **`contenteditable` + HTML persistence** — usable rich text without editor-framework overhead  
+- **JSON file + `DATA_FILE`** — portable locally; volume-backed on Fly  
+- **`x-user-id` simulated identity** — sharing demos without OAuth friction  
+- **Access checks on the server** — share/export/read/write cannot be bypassed by UI alone  
 
-## Deploy notes
+---
 
-Live on Fly.io (`ajaia-docs-ashah`) with a 1GB volume mounted at `/data`. Redeploy with:
+## How to run locally
+
+Requires Node.js 20+.
 
 ```bash
-fly deploy --ha=false
+npm start
+# open http://localhost:3000
+npm test
 ```
+
+Details: `README.md`.
+
+---
+
+## Walkthrough video
+
+Paste the unlisted Loom / YouTube link into `VIDEO_URL.txt` before final Drive upload.  
+Speaking outline: `WALKTHROUGH_SCRIPT.md` (covers main flow, what works, deprioritization, decisions, AI usage).
+
+---
+
+## Screenshots
+
+See `screenshots/` for editor, sharing, and workspace overview captures (no special setup beyond opening the live URL).

@@ -42,8 +42,10 @@ Suggested path:
 3. **Share** with Linus (or confirm Grace already has access)
 4. Switch to Grace / Linus — note **Owned by you** vs **Shared with you**
 5. Import a `.txt` or `.md` file via the sidebar ↑ control
+6. Click **Export .md** to download the current document as Markdown
 
 **Supported uploads:** `.txt` and `.md` only (stated in the UI). Other types return `415`.
+**Export:** any document you can open can be downloaded as `.md` (headings, lists, bold/italic).
 
 ## Live demo
 

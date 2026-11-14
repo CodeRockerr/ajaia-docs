@@ -1,1 +1,6 @@
-Walkthrough video: record and paste the unlisted Loom or YouTube URL here before submission.
+Walkthrough video URL (unlisted Loom or YouTube):
+
+PASTE_YOUR_LOOM_OR_YOUTUBE_URL_HERE
+
+Recording guide: see WALKTHROUGH_SCRIPT.md
+Live app for recording: https://ajaia-docs-ashah.fly.dev/

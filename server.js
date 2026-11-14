@@ -137,6 +137,66 @@ function markdownToHtml(text) {
   return blocks.join("");
 }
 
+function decodeEntities(text) {
+  return text
+    .replaceAll("&nbsp;", " ")
+    .replaceAll("&amp;", "&")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'");
+}
+
+function inlineToMarkdown(html) {
+  return decodeEntities(
+    html
+      .replace(/<\/?(strong|b)>/gi, "**")
+      .replace(/<\/?(em|i)>/gi, "*")
+      .replace(/<\/?u>/gi, "")
+      .replace(/<br\s*\/?>/gi, "  \n")
+      .replace(/<[^>]+>/g, "")
+  ).trim();
+}
+
+export function htmlToMarkdown(html, title = "") {
+  let working = String(html || "");
+
+  working = working.replace(/<ul[^>]*>([\s\S]*?)<\/ul>/gi, (_, inner) => {
+    const items = [...inner.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)]
+      .map((item) => `- ${inlineToMarkdown(item[1])}`)
+      .join("\n");
+    return `\n${items}\n`;
+  });
+
+  working = working.replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_, inner) => {
+    let index = 0;
+    const items = [...inner.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)]
+      .map((item) => `${++index}. ${inlineToMarkdown(item[1])}`)
+      .join("\n");
+    return `\n${items}\n`;
+  });
+
+  working = working
+    .replace(/<h1[^>]*>([\s\S]*?)<\/h1>/gi, (_, inner) => `\n# ${inlineToMarkdown(inner)}\n`)
+    .replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, (_, inner) => `\n## ${inlineToMarkdown(inner)}\n`)
+    .replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, (_, inner) => `\n### ${inlineToMarkdown(inner)}\n`)
+    .replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, inner) => `\n> ${inlineToMarkdown(inner)}\n`)
+    .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, inner) => `\n${inlineToMarkdown(inner)}\n`)
+    .replace(/<div[^>]*>([\s\S]*?)<\/div>/gi, (_, inner) => `\n${inlineToMarkdown(inner)}\n`)
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "");
+
+  const body = decodeEntities(working)
+    .split(/\n/)
+    .map((line) => line.trimEnd())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  const header = title ? `# ${title}\n\n` : "";
+  return `${header}${body}\n`;
+}
+
 export async function handleApi(request, response) {
   const store = readStore();
   const url = new URL(request.url, "http://localhost");
@@ -156,8 +216,19 @@ export async function handleApi(request, response) {
     if (!document) return sendError(response, 404, "Document not found");
     if (!canAccess(document, user.id)) return sendError(response, 403, "You do not have access to this document");
 
-    if (request.method === "GET") return send(response, 200, publicDocument(document, store));
-    if (request.method === "PUT") {
+    if (request.method === "GET" && parts[3] === "export" && parts[4] === "markdown") {
+      const markdown = htmlToMarkdown(document.content, document.title);
+      const filename = `${document.title.replace(/[^\w\s-]+/g, "").trim().replace(/\s+/g, "-").slice(0, 60) || "document"}.md`;
+      response.writeHead(200, {
+        "content-type": "text/markdown; charset=utf-8",
+        "content-disposition": `attachment; filename="${filename}"`
+      });
+      response.end(markdown);
+      return;
+    }
+
+    if (request.method === "GET" && !parts[3]) return send(response, 200, publicDocument(document, store));
+    if (request.method === "PUT" && !parts[3]) {
       const body = await readJson(request);
       if (typeof body.title !== "string" || !body.title.trim()) return sendError(response, 400, "A document title is required");
       if (typeof body.content !== "string") return sendError(response, 400, "Document content must be text");

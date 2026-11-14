@@ -4,26 +4,50 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ajaia Docs</title>
-    <meta name="description" content="A lightweight collaborative document workspace." />
+    <meta name="description" content="A collaborative document workspace with a calm, animated editing experience." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
+    <div class="ambient" aria-hidden="true">
+      <div class="orb orb-a"></div>
+      <div class="orb orb-b"></div>
+      <div class="orb orb-c"></div>
+      <div class="grid-wash"></div>
+      <canvas id="ink-canvas" class="ink-canvas"></canvas>
+    </div>
+
+    <div id="progress" class="read-progress" aria-hidden="true"></div>
+
     <div class="app-shell">
       <header class="topbar">
         <div class="brand">
-          <div class="brand-mark" aria-hidden="true">A</div>
-          <div>
+          <div class="brand-mark" aria-hidden="true">
+            <span class="brand-mark-inner">A</span>
+            <span class="brand-ring"></span>
+          </div>
+          <div class="brand-copy">
             <strong>Ajaia</strong>
-            <span>Docs workspace</span>
+            <span id="brand-tagline">Docs workspace</span>
           </div>
         </div>
+
         <div class="top-actions">
-          <span id="save-status" class="save-status">Saved</span>
+          <div id="save-status" class="save-status is-saved" role="status">
+            <span class="save-dot" aria-hidden="true"></span>
+            <span class="save-label">Saved</span>
+          </div>
           <label class="user-switcher">
             <span>Viewing as</span>
             <select id="user-select" aria-label="Switch seeded user"></select>
           </label>
-          <button id="new-document" class="button button-primary" type="button">+ New document</button>
+          <button id="focus-toggle" class="button button-ghost" type="button" title="Focus mode">Focus</button>
+          <button id="new-document" class="button button-primary" type="button">
+            <span class="button-shine" aria-hidden="true"></span>
+            <span>+ New document</span>
+          </button>
           <div id="avatar" class="avatar" aria-hidden="true">AL</div>
         </div>
       </header>
@@ -32,8 +56,55 @@
         <aside class="sidebar">
           <div class="sidebar-heading">
             <span>Workspace</span>
-            <button id="import-button" class="icon-button" type="button" title="Import .txt or .md">↥</button>
+            <button id="import-button" class="icon-button" type="button" title="Import .txt or .md">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 2v8M8 2l-3 3M8 2l3 3M3 10v2.5A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
             <input id="file-input" type="file" accept=".txt,.md,text/plain,text/markdown" hidden />
+          </div>
+
+          <section class="pulse-panel" aria-label="Workspace overview">
+            <div class="pulse-header">
+              <div>
+                <p class="pulse-kicker" id="greeting">Activity</p>
+                <h2 class="pulse-title">Your desk</h2>
+              </div>
+              <div class="pulse-total"><span id="stat-total">0</span><small>docs</small></div>
+            </div>
+
+            <div class="ring-row" aria-hidden="true">
+              <div class="ring-wrap">
+                <svg class="ring-chart" viewBox="0 0 72 72">
+                  <circle class="ring-track" cx="36" cy="36" r="28"></circle>
+                  <circle id="ring-owned" class="ring-owned" cx="36" cy="36" r="28"></circle>
+                  <circle id="ring-shared" class="ring-shared" cx="36" cy="36" r="28"></circle>
+                </svg>
+                <div class="ring-center"><strong id="stat-ratio">0%</strong><span>owned</span></div>
+              </div>
+              <div class="pulse-bars">
+                <div class="pulse-bar owned">
+                  <span class="pulse-bar-fill" id="bar-owned"></span>
+                  <span class="pulse-bar-label">Owned <strong id="stat-owned">0</strong></span>
+                </div>
+                <div class="pulse-bar shared">
+                  <span class="pulse-bar-fill" id="bar-shared"></span>
+                  <span class="pulse-bar-label">Shared <strong id="stat-shared">0</strong></span>
+                </div>
+                <div class="legend">
+                  <span><i class="swatch owned"></i> Yours</span>
+                  <span><i class="swatch shared"></i> Shared in</span>
+                </div>
+              </div>
+            </div>
+
+            <svg class="sparkline" id="sparkline" viewBox="0 0 160 36" preserveAspectRatio="none" aria-hidden="true"></svg>
+            <p class="pulse-caption">Writing energy · updates as you type</p>
+          </section>
+
+          <div class="dropzone" id="dropzone">
+            <strong>Drop .txt / .md</strong>
+            <span>or click ↑ to import</span>
           </div>
 
           <div class="section-label">Owned by you</div>
@@ -43,25 +114,36 @@
           <nav id="shared-list-nav" class="document-list" aria-label="Shared documents"></nav>
 
           <div class="sidebar-footer">
-            <div class="tip-icon" aria-hidden="true">↑</div>
+            <div class="tip-icon" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M7 1L4 4M7 1l3 3M2 9v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
             <div>
-              <strong>Import supported</strong>
-              <p>.txt and .md become editable documents.</p>
+              <strong>Shortcuts</strong>
+              <p><kbd>⌘</kbd><kbd>B</kbd> bold · <kbd>⌘</kbd><kbd>S</kbd> save</p>
             </div>
           </div>
         </aside>
 
         <main class="main-content">
           <div id="empty-state" class="empty-state hidden">
-            <div class="empty-icon">A</div>
-            <h2>Start in Ajaia</h2>
+            <div class="empty-visual" aria-hidden="true">
+              <div class="empty-ring"></div>
+              <div class="empty-icon">A</div>
+            </div>
+            <h2>Start in <em>Ajaia</em></h2>
             <p>Create a document, import a draft, or open something shared with you.</p>
+            <div class="empty-actions">
+              <button id="empty-new" class="button button-primary" type="button">Create your first doc</button>
+              <button id="empty-import" class="button button-secondary" type="button">Import a file</button>
+            </div>
           </div>
 
           <section id="editor-view" class="editor-view">
             <div class="document-header">
               <div class="breadcrumbs">Workspace <span>/</span> <span id="breadcrumb-title">Welcome to Ajaia</span></div>
               <div class="header-actions">
+                <div id="presence" class="presence" aria-label="People with access"></div>
+                <button id="export-button" class="button button-secondary" type="button" title="Download as Markdown">Export .md</button>
                 <button id="share-button" class="button button-secondary" type="button">Share</button>
               </div>
             </div>
@@ -71,12 +153,16 @@
             <div class="editor-meta">
               <span id="owner-badge" class="badge">Owned by you</span>
               <span id="updated-label">Updated just now</span>
+              <span class="meta-sep" aria-hidden="true"></span>
+              <span id="word-count" class="word-count">0 words</span>
+              <span class="meta-sep" aria-hidden="true"></span>
+              <span id="read-time" class="word-count">1 min read</span>
             </div>
 
             <div class="toolbar" role="toolbar" aria-label="Formatting">
-              <button type="button" data-command="bold" title="Bold"><strong>B</strong></button>
-              <button type="button" data-command="italic" title="Italic"><em>I</em></button>
-              <button type="button" data-command="underline" title="Underline"><u>U</u></button>
+              <button type="button" data-command="bold" title="Bold (⌘B)"><strong>B</strong></button>
+              <button type="button" data-command="italic" title="Italic (⌘I)"><em>I</em></button>
+              <button type="button" data-command="underline" title="Underline (⌘U)"><u>U</u></button>
               <span class="toolbar-divider" aria-hidden="true"></span>
               <select id="block-format" title="Text style" aria-label="Text style">
                 <option value="p">Paragraph</option>
@@ -88,13 +174,19 @@
               <button type="button" data-command="insertUnorderedList" title="Bulleted list">• List</button>
               <button type="button" data-command="insertOrderedList" title="Numbered list">1. List</button>
               <button type="button" data-command="formatBlock" data-value="blockquote" title="Quote">Quote</button>
+              <div class="toolbar-meter" aria-hidden="true" title="Writing rhythm">
+                <span id="rhythm-fill" class="rhythm-fill"></span>
+              </div>
             </div>
 
-            <article id="editor" class="editor" contenteditable="true" spellcheck="true" aria-label="Document body"></article>
+            <div class="paper-stage" id="paper-stage">
+              <div class="paper-grain" aria-hidden="true"></div>
+              <article id="editor" class="editor" contenteditable="true" spellcheck="true" aria-label="Document body"></article>
+            </div>
 
             <div class="editor-footer">
               <span>Changes save automatically</span>
-              <span>Supported import: .txt, .md</span>
+              <span id="footer-hint">Supported import: .txt, .md</span>
             </div>
           </section>
         </main>
@@ -104,7 +196,10 @@
     <div id="share-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="share-title">
       <div class="modal">
         <button id="close-modal" class="modal-close" type="button" aria-label="Close">×</button>
-        <div class="modal-eyebrow">COLLABORATE</div>
+        <div class="modal-art" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="modal-eyebrow">Collaborate</div>
         <h2 id="share-title">Share this document</h2>
         <p class="modal-description">Grant another seeded teammate edit access. Owners keep control of sharing.</p>
         <label for="share-user">Teammate</label>
@@ -114,6 +209,7 @@
       </div>
     </div>
 
+    <div id="burst" class="burst" aria-hidden="true"></div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="/app.js"></script>
   </body>

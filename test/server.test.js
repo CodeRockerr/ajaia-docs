@@ -42,3 +42,22 @@ test("import only accepts supported text formats", async () => {
   const rejected = await request("/api/import", { method: "POST", body: JSON.stringify({ filename: "notes.pdf", content: "x" }) });
   assert.equal(rejected.status, 415);
 });
+
+test("export returns markdown for authorized users only", async () => {
+  const create = await request("/api/documents", {
+    method: "POST",
+    headers: { "x-user-id": "ada" },
+    body: JSON.stringify({ title: "Export Me", content: "<h1>Hello</h1><p>World with <strong>bold</strong></p><ul><li>One</li></ul>" })
+  });
+  const document = await create.json();
+  const exported = await request(`/api/documents/${document.id}/export/markdown`, { headers: { "x-user-id": "ada" } });
+  assert.equal(exported.status, 200);
+  assert.match(exported.headers.get("content-type") || "", /markdown/);
+  const markdown = await exported.text();
+  assert.match(markdown, /# Export Me/);
+  assert.match(markdown, /# Hello/);
+  assert.match(markdown, /\*\*bold\*\*/);
+  assert.match(markdown, /- One/);
+  const denied = await request(`/api/documents/${document.id}/export/markdown`, { headers: { "x-user-id": "linus" } });
+  assert.equal(denied.status, 403);
+});

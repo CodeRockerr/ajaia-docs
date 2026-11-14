@@ -22,11 +22,12 @@
 
 ## How I verified correctness, UX, and reliability
 
-1. `npm test` — persistence, sharing ACL, and import validation
+1. `npm test` — persistence, sharing ACL, import validation, and Markdown export ACL
 2. Manual browser pass as Ada → edit → refresh → confirm persistence
 3. Share with Grace → switch identity → confirm owned vs shared sections
 4. Switch to Linus → confirm denied access on unshared docs
 5. Import `.md` and reject `.pdf` / unsupported types via UI + API
-6. Post-deploy smoke check of the live URL with the same seeded users
+6. Export `.md` and confirm headings/lists/bold survive the round-trip
+7. Post-deploy smoke check of the live URL with the same seeded users
 
 AI accelerated scaffolding; product judgment (scope cuts, access model, reviewer walkthrough) stayed human-owned.
